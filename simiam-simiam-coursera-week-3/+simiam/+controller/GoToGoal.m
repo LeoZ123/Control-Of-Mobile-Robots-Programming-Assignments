@@ -27,7 +27,7 @@ classdef GoToGoal < simiam.controller.Controller
     end
     
     properties (Constant)
-        % I/O
+        % I/O 
         inputs = struct('x_g', 0, 'y_g', 0, 'v', 0);
         outputs = struct('v', 0, 'w', 0);
     end
@@ -40,13 +40,13 @@ classdef GoToGoal < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('go_to_goal');
             
             % initialize memory banks
-            obj.Kp = 0;
+            obj.Kp = 6;
             obj.Ki = 0;
             obj.Kd = 0;
                         
             % errors
             obj.E_k = 0;
-            obj.e_k_1 = 0;
+            obj.e_k_1 = 0; 
             
             % plot support
             obj.p = [];
@@ -76,34 +76,37 @@ classdef GoToGoal < simiam.controller.Controller
             % 1. Calculate the heading (angle) to the goal.
             
             % distance between goal and robot in x-direction
-            u_x = 0;     
+            u_x = x_g - x;     
                 
             % distance between goal and robot in y-direction
-            u_y = 0;
+            u_y = y_g - y;
                 
             % angle from robot to goal. Hint: use ATAN2, u_x, u_y here.
-            theta_g = 0;
+            theta_g = atan2(u_y, u_x);
             
             % 2. Calculate the heading error.
             
             % error between the goal angle and robot's angle
             % Hint: Use ATAN2 to make sure this stays in [-pi,pi].
-            e_k = 0;            
+            alpha = theta_g - theta;
+            e_k = atan2(sin(alpha),cos(alpha)); 
+            %e_k = theta_g - theta;
                 
             % 3. Calculate PID for the steering angle 
             
             % error for the proportional term
-            e_P = 0;
+            e_P = e_k;
+            
             
             % error for the integral term. Hint: Approximate the integral using
             % the accumulated error, obj.E_k, and the error for
             % this time step, e_k.
-            e_I = 0;
+            e_I = e_k + obj.E_k;
                      
             % error for the derivative term. Hint: Approximate the derivative
             % using the previous error, obj.e_k_1, and the
             % error for this time step, e_k.
-            e_D = 0;    
+            e_D = e_k - obj.e_k_1;    
             
             %% END CODE BLOCK %%
                   
